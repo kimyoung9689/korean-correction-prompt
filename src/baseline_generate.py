@@ -5,7 +5,7 @@ import pandas as pd
 from tqdm import tqdm
 from dotenv import load_dotenv
 from openai import OpenAI
-from prompts import baseline_prompt
+from src.prompts import baseline_prompt
 
 # Load environment variables
 load_dotenv()
