@@ -1,44 +1,47 @@
 import os
 import argparse
-import re # 정규 표현식 모듈 추가
-
+import re
 import pandas as pd
 from tqdm import tqdm
 from dotenv import load_dotenv
 from openai import OpenAI
-# 단일 프롬프트만 가져옵니다.
-from prompts import single_turn_cot_prompt 
+from openai import APIError # API 오류 처리를 위해 추가
+
+# <<<--- 변경 1: prompts.py 파일의 baseline_prompt를 사용하도록 변경 --->>>
+from prompts import baseline_prompt as current_prompt 
 
 # Load environment variables
 load_dotenv()
 
 SYSTEM_MESSAGE = "당신은 한국어 문장 교정 전문가입니다. 주어진 지시에 따라 정확하게 분석하고 교정 작업을 수행합니다."
 
-# 최종 교정 결과만 파싱하는 함수
+
 def extract_correction(output_text: str, original_text: str) -> str:
-    # 1. <교정> 태그 이후의 텍스트를 찾습니다.
+    """<교정> 태그만 파싱합니다."""
+    # <교정> 태그 이후의 텍스트를 찾습니다.
+    # 대소문자 무시 (IGNORECASE)를 제거하고 STRICT하게 변경하여 Precision 향상 시도
     match = re.search(r'<교정>\s*(.*?)$', output_text, re.DOTALL)
     
     if match:
-        # 찾은 텍스트의 앞뒤 공백을 제거하고 반환합니다.
         corrected = match.group(1).strip()
-        # LLM이 간혹 <교정> 태그를 출력하지 않고 문장만 출력할 때가 있으므로, 
-        # 최종 문장이 비어있지 않은지 확인합니다.
+        # 파싱 실패 시 원문 반환
         return corrected if corrected else original_text
     
-    # 2. <교정> 태그를 찾지 못했다면, 마지막 줄을 시도해봅니다. (최후의 보루)
+    # 태그를 찾지 못했으나 문장만 출력했을 경우를 대비하여 마지막 줄을 확인합니다.
     lines = output_text.strip().split('\n')
-    if lines and not lines[-1].startswith('<사고 과정>'):
-        return lines[-1].strip()
-
-    # 3. 모든 파싱에 실패하면 원문을 반환합니다.
+    if lines and len(lines) == 1:
+        return lines[0].strip()
+        
+    # 최종적으로 파싱에 실패하면 원문 반환
     return original_text
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate corrected sentences using Upstage API with Single-turn CoT")
-    parser.add_argument("--input", default="data/train.csv", help="Input CSV path containing err_sentence column")
-    parser.add_argument("--output", default="submission/single_turn_cot_submission.csv", help="Output CSV path") 
+    parser = argparse.ArgumentParser(description="Generate corrected sentences using Upstage API with Clean Baseline Strategy")
+    # <<<--- 변경 2: 기본 입력 파일을 test.csv로 변경 --->>>
+    parser.add_argument("--input", default="data/test.csv", help="Input CSV path containing err_sentence column")
+    # <<<--- 변경 3: 출력 파일명을 새로운 Baseline 측정 파일로 변경 --->>>
+    parser.add_argument("--output", default="submission/initial_baseline_test_set.csv", help="Output CSV path") 
     parser.add_argument("--model", default="solar-pro2", help="Model name (default: solar-pro2)")
     args = parser.parse_args()
 
@@ -51,9 +54,13 @@ def main():
     # Setup Upstage client
     api_key = os.getenv("UPSTAGE_API_KEY")
     if not api_key:
-        raise ValueError("UPSTAGE_API_KEY not found in environment variables")
+        raise ValueError("UPSTAGE_API_KEY not found in environment variables. Please check your .env file.")
     
-    client = OpenAI(api_key=api_key, base_url="https://api.upstage.ai/v1")
+    try:
+        client = OpenAI(api_key=api_key, base_url="https://api.upstage.ai/v1")
+    except Exception as e:
+        raise ValueError(f"Failed to initialize OpenAI client: {e}")
+
     
     print(f"Model: {args.model}")
     print(f"Output: {args.output}")
@@ -67,19 +74,20 @@ def main():
         
         try:
             # -----------------------------------------------------------------
-            # Single-turn CoT: One API Call
+            # Clean Baseline: Stable API Call
             # -----------------------------------------------------------------
             
-            # 사고 과정까지 포함된 통합 프롬프트
-            prompt_cot = single_turn_cot_prompt.format(text=text)
+            # current_prompt는 baseline_prompt (prompts.py에서 정의)
+            prompt_final = current_prompt.format(text=text)
             
             resp = client.chat.completions.create(
                 model=args.model,
                 messages=[
                     {"role": "system", "content": SYSTEM_MESSAGE},
-                    {"role": "user", "content": prompt_cot},
+                    {"role": "user", "content": prompt_final},
                 ],
-                temperature=0.0,
+                # 안정적인 출력을 위해 temperature=0.0 유지
+                temperature=0.0, 
             )
             raw_output = resp.choices[0].message.content.strip()
             
@@ -87,14 +95,21 @@ def main():
             corrected = extract_correction(raw_output, text)
             cor_sentences.append(corrected)
             
+        except APIError as e:
+            # API 호출 중 발생하는 오류 (키 만료, 권한 없음 등)
+            print(f"\n!!! API ERROR on ID {ids[i]} ({text[:50]}...): {e}")
+            raise e
         except Exception as e:
-            print(f"\nError processing ID {ids[i]} ({text[:50]}...): {e}")
-            cor_sentences.append(text)  # 오류 발생 시 원문으로 대체
-            
+            # 기타 일반 오류
+            print(f"\n!!! UNEXPECTED ERROR on ID {ids[i]} ({text[:50]}...): {e}")
+            raise e
+
 
     # Save results with required column names
     out_df = pd.DataFrame({
         "id": ids,
+        # 원본 문장(err_sentences) 컬럼 추가
+        "err_sentence": err_sentences, 
         "cor_sentence": cor_sentences,
     })
     
