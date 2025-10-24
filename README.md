@@ -278,7 +278,7 @@ Temperature 등 API 호출 파라미터를 자유롭게 변경하며, 가장 안
 
 
 
-<img width="655" height="2136" alt="Image" src="https://github.com/user-attachments/assets/1149a7d1-33b5-42c2-a909-cff06924bce2" />
+<img width="355"  alt="Image" src="https://github.com/user-attachments/assets/1149a7d1-33b5-42c2-a909-cff06924bce2" />
 ---
 
 ## 6. How to Run 
