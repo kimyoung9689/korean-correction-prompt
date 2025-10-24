@@ -17,7 +17,7 @@
 등의 효과를 기대합니다.
 
 
-## 📚 Table of Contents
+## Table of Contents
 - [팀 구성원](#팀-구성원)
 - [0. Overview](#0-overview)
 - [1. Competiton Info](#1-competiton-info)
@@ -28,6 +28,8 @@
 - [6. How to Run](#6-how-to-run)
 - [7. Reference](#7-reference)
 - [ETC](#etc)
+
+
 
 
 
@@ -128,7 +130,7 @@ False Missing (FN): 정답에는 있지만 예측이 놓친 교정 건수
 False Redundant (FR): 예측이 불필요하게 수정한 건수
 
 Precision(정밀도) 계산식
-![alt text](image-1.png)
+<img width="497" height="107" alt="Image" src="https://github.com/user-attachments/assets/d07aefca-60b7-41e5-9ab7-a181e930070a" />
 
 TP: 올바른 교정
 
@@ -139,7 +141,7 @@ FN: 놓친 교정
 FR: 불필요한 교정
 
 Recall(재현율) 계산식
-![alt text](image-2.png)
+<img width="463" height="128" alt="Image" src="https://github.com/user-attachments/assets/8e16fd7a-e4ed-4a3e-b73e-3d29322c5ac8" />
 
 TP: 올바른 교정
 
@@ -253,14 +255,30 @@ Function Calling 및 RAG 접근 방식이 허용되지만, 대회 제공 데이�
 Temperature 등 API 호출 파라미터를 자유롭게 변경하며, 가장 안정적이고 높은 Recall 점수를 확보할 수 있는 최적의 조합을 반복 실험을 통해 도출했습니다.
 
 
+### 최종 점수를 달성한 $\text{2-Step Multi-Turn XML}$ 프롬프트의 구조
+
+- $\text{Step 1}$ (XML Error Report)의 지시사항 (<오류목록> 태그 강제)
+
+- $\text{Step 2}$ (Final Correction)의 지시사항 (Step 1의 $\text{XML}$을 참고하여 최종 교정문만 출력)
+
+
+
+
 ---
 
 ## 5. Result
 
 ### Leader Board
 
-![alt text](image-3.png)
+<img width="765" height="118" alt="Image" src="https://github.com/user-attachments/assets/254248b3-8eac-4624-9436-6ae972751005" />
 
+
+
+
+
+
+
+<img width="655" height="2136" alt="Image" src="https://github.com/user-attachments/assets/1149a7d1-33b5-42c2-a909-cff06924bce2" />
 ---
 
 ## 6. How to Run 
@@ -271,9 +289,12 @@ Temperature 등 API 호출 파라미터를 자유롭게 변경하며, 가장 안
 
 본 프로젝트는 Python 3.12 이상 환경에서 실행하는 것을 권장하며, 필요한 패키지는 pyproject.toml을 통해 관리됩니다.
 
-/코드
+
 # Python 버전 확인
-$ python --version
+    python --version
+
+
+
 
 # 필요한 라이브러리 설치 (Poetry 등 패키지 매니저 사용 시)
 # $ poetry install
@@ -286,20 +307,25 @@ Upstage Solar Pro 2 API 호출을 위해서는 API Key 설정이 필수입니다
 
 다음 형식에 맞춰 Solar Pro 2 API 키를 입력합니다.
 
-/코드
-# .env 파일 내용
-SOLAR_API_KEY="[여기에 발급받은 실제 API 키 입력]"
+    
+    # .env 파일 내용
+    SOLAR_API_KEY="[여기에 발급받은 실제 API 키 입력]"
+
+
+
 
 3. 데이터셋 준비
 대회 참여를 위해 제공받은 데이터셋 파일을 data/ 디렉토리 내에 위치시킵니다.
 
 코드
 # data 디렉토리 구조 (로컬 환경 기준)
-.
+<pre>
 └── data/
     ├── train.csv
     ├── test.csv
     └── sample_submission.csv
+</pre>
+
 
 
 [주의] 제공된 데이터셋은 (주)업스테이지에 귀속되며 , 유출, 복사, 공유가 엄격히 금지되어 있습니다. 본 프로젝트 실행을 위해서만 사용해야 하며, data/ 디렉토리는 .gitignore를 통해 Git/GitHub 추적에서 제외됩니다.
