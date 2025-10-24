@@ -129,7 +129,8 @@ False Missing (FN): 정답에는 있지만 예측이 놓친 교정 건수
 
 False Redundant (FR): 예측이 불필요하게 수정한 건수
 
-Precision(정밀도) 계산식
+### Precision(정밀도) 계산식
+
 <img width="497" height="107" alt="Image" src="https://github.com/user-attachments/assets/d07aefca-60b7-41e5-9ab7-a181e930070a" />
 
 TP: 올바른 교정
@@ -140,8 +141,9 @@ FN: 놓친 교정
 
 FR: 불필요한 교정
 
-Recall(재현율) 계산식
-<img width="463" height="128" alt="Image" src="https://github.com/user-attachments/assets/8e16fd7a-e4ed-4a3e-b73e-3d29322c5ac8" />
+### Recall(재현율) 계산식
+
+<img width="497" height="107" alt="Image" src="https://github.com/user-attachments/assets/8e16fd7a-e4ed-4a3e-b73e-3d29322c5ac8" />
 
 TP: 올바른 교정
 
