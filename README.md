@@ -272,7 +272,7 @@ Temperature 등 API 호출 파라미터를 자유롭게 변경하며, 가장 안
 
 ### Leader Board
 
-<img width="765" height="118" alt="Image" src="https://github.com/user-attachments/assets/254248b3-8eac-4624-9436-6ae972751005" />
+<img width="781" height="127" alt="Image" src="https://github.com/user-attachments/assets/b9b4d599-cbfb-491b-a3bd-9fb7e30a56a6" />
 
 
 
