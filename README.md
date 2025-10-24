@@ -274,8 +274,9 @@ Temperature 등 API 호출 파라미터를 자유롭게 변경하며, 가장 안
 
 <img width="781" height="127" alt="Image" src="https://github.com/user-attachments/assets/b9b4d599-cbfb-491b-a3bd-9fb7e30a56a6" />
 
+#### 제출 파일중의 최고점
 
-
+<img width="620" height="66" alt="Image" src="https://github.com/user-attachments/assets/4c4d074f-e279-4768-8c69-ab4a54b4cf8f" />
 
 ### 최종 전략 아키텍처 다이어그램
 
