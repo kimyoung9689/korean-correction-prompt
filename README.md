@@ -275,10 +275,12 @@ Temperature 등 API 호출 파라미터를 자유롭게 변경하며, 가장 안
 
 
 
+### 최종 전략 아키텍처 다이어그램
 
 
+<img width="290"  alt="Image" src="https://github.com/user-attachments/assets/1149a7d1-33b5-42c2-a909-cff06924bce2" />
 
-<img width="275"  alt="Image" src="https://github.com/user-attachments/assets/1149a7d1-33b5-42c2-a909-cff06924bce2" />
+
 ---
 
 ## 6. How to Run 
